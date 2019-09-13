@@ -1,0 +1,292 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Example script for a typical analysis.</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-08-22"><meta name="DC.source" content="typical_example.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Example script for a typical analysis.</h1><!--introduction--><p>A typical data analysis using the transition model SVD recombination method is described in the following. The basic steps any analysis should contain, are:</p><div><ol><li>load some data</li><li>choose a rank</li><li>create/load a model</li><li>choose/vary start parameters and/or bounds</li><li>decompose and fit</li><li>evaluate results</li><li>repeat from 1 until reasonable and stable results are obtained</li></ol></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">1. Load some data</a></li><li><a href="#3">2. choose a rank</a></li><li><a href="#4">3. Define a transition model</a></li><li><a href="#7">4. choose/vary start parameters and/or bounds</a></li><li><a href="#9">5. Decompose and fit</a></li><li><a href="#10">6. Assesment of the results</a></li></ul></div><h2 id="1">1. Load some data</h2><p>The loading routine should provide:</p><div><ul><li>The absorbance/intensity/... array, here A.</li><li>The vector with an energy equivalent (wavelength/wavenumber/frequency/...), here wavenumber.</li><li>The control variable (time/temperature/potential/...), here c.</li></ul></div><pre class="codeinput">SpectralData = load (<span class="string">'sim_example_data.dat'</span>);
+A = SpectralData(:,2:end);
+wvnr = SpectralData(:,1);
+c = [10:5:80];
+</pre><h2 id="3">2. choose a rank</h2><p>Different criteria are discussed in detail by: Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33. Here visual Inspection of U, S, and V is applied using RankFinder app. Within this programm the global variable rnk is defined.</p><pre class="codeinput"><span class="keyword">global</span> rnk;
+app = RankFinder(wvnr,c,A);
+waitfor(app.UIFigure);
+</pre><pre class="codeoutput">Warning: The value of local variables may have been changed to match the
+globals.  Future versions of MATLAB will require that you declare a variable to
+be global before you use that variable. 
+</pre><h2 id="4">3. Define a transition model</h2><p>A model for usage within this package consists of a cell array that contains handles to anonymous model functions. The model array is of size [1,n] with n the number of (c-dependent) transitions.</p><p>Create a simple sigmoidal model, from the standard library provided by the model_fun class:</p><pre class="codeinput">n = 2;
+[Model ,Paralist] = simple_model(model_fun.sigmoid, n, 1);
+</pre><p>The order of the parameters the parameter vectors, needed for the following steps is specified in the parameter name list 'Paralist' as it is returned above by simple_model(...):</p><pre class="codeinput">disp(Paralist)
+</pre><pre class="codeoutput">    'c_mid_1'
+    'del_1'
+    'c_mid_2'
+    'del_2'
+
+</pre><p>Alternatively, a list of parameter names can be created by:</p><pre class="codeinput">Paralist = vecpar(Model)
+</pre><pre class="codeoutput">
+Paralist =
+
+  4&times;1 cell array
+
+    {'c_mid_1'}
+    {'del_1'  }
+    {'c_mid_2'}
+    {'del_2'  }
+
+</pre><h2 id="7">4. choose/vary start parameters and/or bounds</h2><p>3 parameter vectors must be constructed that contain start parameters, the lower bounds and and the upper bounds. The order and size of these parameter vectors is defined by 'Paralist'.</p><pre class="codeinput">startparas = [30; 5; 90; 5];
+lb = [0; 0; 0; 0];
+ub = [100; 100; 100; 100];
+</pre><p>Also, create an optimization options structure and define the important options:</p><pre class="codeinput">ftopt = optimset (<span class="string">'Tolfun'</span>, 1e-18, <span class="keyword">...</span>
+                  <span class="string">'MaxFunEvals'</span>,100000,<span class="keyword">...</span>
+                  <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span>
+                  <span class="string">'TolX'</span>,1E-18,<span class="keyword">...</span>
+                  <span class="string">'MaxIter'</span>, 1000);
+</pre><h2 id="9">5. Decompose and fit</h2><p>Call recombfit(...) to fit the model to the data.</p><pre class="codeinput">[paramout,resnorm,residual,exitflag,output] = <span class="keyword">...</span>
+    recombfit(Model, c, A, rnk, startparas, lb, ub, ftopt);
+</pre><pre class="codeoutput">
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality
+     0          5      0.00102926                        0.0108
+     1         10     0.000314153       0.613642        0.00314      
+     2         15     0.000104422         1.3926       0.000133      
+     3         20     0.000104422        3.27597       0.000133      
+     4         25     8.89935e-05       0.818994       6.07e-05      
+     5         30     5.02669e-05        1.63799       5.91e-05      
+     6         35     8.27941e-06         1.2287       7.98e-05      
+     7         40     3.58933e-06       0.453466       1.89e-05      
+     8         45     3.46941e-06      0.0481009       4.42e-07      
+     9         50     3.46776e-06     0.00724897       1.07e-07      
+    10         55     3.46773e-06    0.000761509       1.05e-08      
+    11         60     3.46773e-06    8.60925e-05       1.19e-09      
+    12         65     3.46773e-06     9.7098e-06       1.32e-10      
+    13         70     3.46773e-06    1.11443e-06       1.53e-11      
+    14         75     3.46773e-06    2.31459e-07       8.53e-12      
+
+Local minimum possible.
+
+lsqnonlin stopped because the final change in the sum of squares relative to 
+its initial value is less than the value of the function tolerance.
+
+</pre><h2 id="10">6. Assesment of the results</h2><p>The matrix F may be determined by calculating the values for the fitted model, by:</p><pre class="codeinput">F = eval_model(c, Model, paramout);
+</pre><p>Alternatively, the result matrices and other matrices, useful for the assesment can be calculated by:</p><pre class="codeinput">[F, D, A_fit, V_fit] = matres(A, c, Model, paramout, rnk);
+[~,~,V] = svd(A,0);
+</pre><p>Plot the results for the transitions F and the associated spectral components.</p><pre class="codeinput">f=figure(<span class="string">'OuterPosition'</span>, [170, 190, 870, 750]);
+
+sp1 = subplot(2,2,1);
+plot(c, F )
+title(<span class="string">'F'</span>)
+legend(num2str([1:size(F,2)]'))
+sp1.YLim = [-0.1, 1.1];
+
+sp2 = subplot(2,2,2);
+plot(wvnr, D)
+title(<span class="string">'D'</span>)
+legend(num2str([1:size(D,2)]'))
+
+sp3 = subplot(<span class="string">'Position'</span>, [0.13, 0.11, 0.22,  0.3259]);
+plot(wvnr, A-A_fit)
+title(<span class="string">'Residuals A - A_{fit} '</span>)
+sp3.YLim = 0.2*max(sp2.YLim)*[-1,1];
+
+sp4 = subplot(<span class="string">'Position'</span>, [0.4075, 0.11, 0.22,  0.3259]);
+plot(wvnr, A, <span class="string">'o'</span>)
+hold(sp4, <span class="string">'on'</span>)
+sp4.ColorOrderIndex = 1;
+plot(wvnr, A_fit)
+title(<span class="string">'comparison A - A_{fit}'</span>)
+
+sp5 = subplot(<span class="string">'Position'</span>, [0.685, 0.11, 0.22,  0.3259]);
+plot(c, V_fit)
+hold(sp5, <span class="string">'on'</span>)
+sp5.ColorOrderIndex = 1;
+plot(c, V(:,1:rnk), <span class="string">'o'</span>)
+title(<span class="string">'comparison V - V_{fit}'</span>)
+</pre><img vspace="5" hspace="5" src="typical_example_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Example script for a typical analysis. 
+% A typical data analysis using the transition model SVD recombination
+% method is described in the following. The basic steps any analysis should
+% contain, are: 
+% 
+% # load some data
+% # choose a rank
+% # create/load a model
+% # choose/vary start parameters and/or bounds
+% # decompose and fit
+% # evaluate results
+% # repeat from 1 until reasonable and stable results are obtained
+
+%% 1. Load some data
+% The loading routine should provide:
+%%
+% * The absorbance/intensity/... array, here A.
+% * The vector with an energy equivalent
+% (wavelength/wavenumber/frequency/...), here wavenumber.
+% * The control variable (time/temperature/potential/...), here c.
+SpectralData = load ('sim_example_data.dat');
+A = SpectralData(:,2:end);       
+wvnr = SpectralData(:,1);
+c = [10:5:80];
+
+%% 2. choose a rank
+% Different criteria are discussed in detail by:
+% Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33.
+% Here visual Inspection of U, S, and V is applied using RankFinder app.
+% Within this programm the global variable rnk is defined.
+global rnk;     
+app = RankFinder(wvnr,c,A);
+waitfor(app.UIFigure);
+
+%% 3. Define a transition model
+% A model for usage within this package consists of a cell array that 
+% contains handles to anonymous model functions. The model array 
+% is of size [1,n] with n the number of (c-dependent) transitions.
+%
+% Create a simple sigmoidal model, from the standard library provided by the
+% model_fun class:
+n = 2;
+[Model ,Paralist] = simple_model(model_fun.sigmoid, n, 1);
+
+%%
+% The order of the parameters the parameter vectors, needed for the 
+% following steps is specified in the parameter name list 'Paralist' as it 
+% is returned above by simple_model(...):
+disp(Paralist)
+
+%%
+% Alternatively, a list of parameter names can be created by:
+Paralist = vecpar(Model)
+
+%% 4. choose/vary start parameters and/or bounds
+% 3 parameter vectors must be constructed that contain start parameters, 
+% the lower bounds and and the upper bounds. The order and size of these
+% parameter vectors is defined by 'Paralist'.
+startparas = [30; 5; 90; 5];
+lb = [0; 0; 0; 0];
+ub = [100; 100; 100; 100];
+%%
+% Also, create an optimization options structure and define the important
+% options:
+ftopt = optimset ('Tolfun', 1e-18, ...
+                  'MaxFunEvals',100000,...
+                  'Display', 'iter',...
+                  'TolX',1E-18,...
+                  'MaxIter', 1000);
+              
+%% 5. Decompose and fit
+% Call recombfit(...) to fit the model to the data.
+[paramout,resnorm,residual,exitflag,output] = ...
+    recombfit(Model, c, A, rnk, startparas, lb, ub, ftopt);
+
+%% 6. Assesment of the results
+% The matrix F may be determined by calculating the values for the fitted 
+% model, by:
+F = eval_model(c, Model, paramout);
+
+%%
+% Alternatively, the result matrices and other matrices, useful for the
+% assesment can be calculated by:
+[F, D, A_fit, V_fit] = matres(A, c, Model, paramout, rnk);
+[~,~,V] = svd(A,0);
+
+%%
+% Plot the results for the transitions F and the associated spectral
+% components.
+f=figure('OuterPosition', [170, 190, 870, 750]);
+
+sp1 = subplot(2,2,1);
+plot(c, F )
+title('F')
+legend(num2str([1:size(F,2)]'))
+sp1.YLim = [-0.1, 1.1];
+
+sp2 = subplot(2,2,2);
+plot(wvnr, D)
+title('D')
+legend(num2str([1:size(D,2)]'))
+
+sp3 = subplot('Position', [0.13, 0.11, 0.22,  0.3259]);
+plot(wvnr, A-A_fit)
+title('Residuals A - A_{fit} ')
+sp3.YLim = 0.2*max(sp2.YLim)*[-1,1];
+
+sp4 = subplot('Position', [0.4075, 0.11, 0.22,  0.3259]);
+plot(wvnr, A, 'o')
+hold(sp4, 'on')
+sp4.ColorOrderIndex = 1;
+plot(wvnr, A_fit)
+title('comparison A - A_{fit}')
+
+sp5 = subplot('Position', [0.685, 0.11, 0.22,  0.3259]);
+plot(c, V_fit)
+hold(sp5, 'on')
+sp5.ColorOrderIndex = 1;
+plot(c, V(:,1:rnk), 'o')
+title('comparison V - V_{fit}')
+
+
+
+##### SOURCE END #####
+--></body></html>
