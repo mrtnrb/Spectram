@@ -4,7 +4,7 @@ classdef model_fun
     %   The functions can be retrieved by fun = model_fun.MODELNAME
     %   MODELNAME: name of the model function. A full list of all models
     %   can be retrieved by: properties(model_fun).
-    % Martin Rabe, 2019
+    % Copyright (c) 2019 Martin Rabe
     
     properties (Constant = true)
         % Sigmoidals

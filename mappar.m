@@ -22,8 +22,7 @@ function [Paramap, varargout] = mappar( model, varargin )
 %          returned by [~, PARAS] = vecpar(MODEL), or fit parameters returned
 %          by recombfit(...).
 %
-% Martin Rabe, 2019
-
+% Copyright (c) 2019 Martin Rabe
 
 %crawl through the model and extract the parameter names and counts
 NumParas = 0;

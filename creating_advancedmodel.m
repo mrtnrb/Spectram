@@ -1,7 +1,9 @@
 %% Example for creating advanced models
-% Summary of example objective
+% This example shows how to manually create and evaluate models.
+%
+% Copyright (c) 2019 Martin Rabe
 
-%% Section 1 Title
+%% Model creation
 % Models can be created 'manually'. Handles to anonymous functions must be 
 % provided in the form @(C,P1,P2,...PN)(fun). With C being
 % the independent (control variable) and P1...PN are the parameter used in 
@@ -22,7 +24,7 @@
 
 Model = {@(c,b,f) sin(c/b)+f ...
          @(c,a0,a1,a2) polyval([a2,a1,a0],c)...         
-         @(c, cstep) stepfun(c, cstep)...
+         @(c, cstep) double(c>=cstep)...
          model_fun.invexpdec};
     
 %% Evaluation of the model    

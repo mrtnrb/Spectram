@@ -8,7 +8,7 @@ function F = eval_model( c, model, paras)
 %   specified by the parameter name list PARALIST returned by
 %   PARALIST = vecpar(MODEL).
 %
-% Martin Rabe, 2019
+% Copyright (c) 2019 Martin Rabe
 
 [~, P] = mappar (model, paras);
 

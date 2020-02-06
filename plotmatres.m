@@ -17,6 +17,8 @@ function [f] = plotmatres(A, x, c, Model, paras, rnk)
 %   PARALIST = vecpar(MODEL).
 %   RNK: Rank used for fitting by recombfit(..., RNK, ...).
 %   for details on A, C, MODEL and RNK see doc(recombfit).
+%
+% Copyright (c) 2019 Martin Rabe
 
 [F, D, A_fit, V_fit] = matres(A, c, Model, paras, rnk);
 

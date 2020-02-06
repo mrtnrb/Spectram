@@ -12,7 +12,8 @@ function [ Paralist, varargout ] = vecpar( Model )
 %   [PARALIST, PARAZEROS] = vecpar(MODEL)
 %   PARAZEROS is a parameter vector containing zeros. Can for instance be
 %   used as start parameters.
-% Martin Rabe, 2019
+%
+% Copyright (c) 2019 Martin Rabe
 
 Paramap = mappar(Model);
 

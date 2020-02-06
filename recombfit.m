@@ -35,7 +35,8 @@ function [ paramout, varargout ] = recombfit(Model, c, A, rnk, startingvs, varar
 %   process. Variables are optional and the same as returned by 
 %   lsqnonlin(...). See doc('lsqnonlin') for more information.
 % 
-% Martin Rabe, 2019
+% Copyright (c) 2019 Martin Rabe
+
 
 
 

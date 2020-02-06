@@ -13,6 +13,9 @@
 %       global rnk
 %       h = RnkFinder(X,C,A);
 %       waitfor(h.fig);
+%
+% Copyright (c) 2019 Martin Rabe
+
 function h = RnkFinder (x, c, A)
 
 

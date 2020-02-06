@@ -11,7 +11,8 @@ function [ Model, varargout] = simple_model( fun, n, const )
 %       fullfills the requirements for a model function. These requirements 
 %       are described in detail creating_advancedmodel.m
 %
-%   % Martin Rabe, 2019
+% Copyright (c) 2019 Martin Rabe
+
 for compNr = 1:n
     
     Model{compNr} = fun;

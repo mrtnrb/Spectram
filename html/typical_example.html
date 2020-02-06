@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Example script for a typical analysis.</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-08-22"><meta name="DC.source" content="typical_example.m"><style type="text/css">
+      --><title>Example script for a typical analysis using Spectram toolbox.</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-06"><meta name="DC.source" content="typical_example.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,141 +66,110 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Example script for a typical analysis.</h1><!--introduction--><p>A typical data analysis using the transition model SVD recombination method is described in the following. The basic steps any analysis should contain, are:</p><div><ol><li>load some data</li><li>choose a rank</li><li>create/load a model</li><li>choose/vary start parameters and/or bounds</li><li>decompose and fit</li><li>evaluate results</li><li>repeat from 1 until reasonable and stable results are obtained</li></ol></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">1. Load some data</a></li><li><a href="#3">2. choose a rank</a></li><li><a href="#4">3. Define a transition model</a></li><li><a href="#7">4. choose/vary start parameters and/or bounds</a></li><li><a href="#9">5. Decompose and fit</a></li><li><a href="#10">6. Assesment of the results</a></li></ul></div><h2 id="1">1. Load some data</h2><p>The loading routine should provide:</p><div><ul><li>The absorbance/intensity/... array, here A.</li><li>The vector with an energy equivalent (wavelength/wavenumber/frequency/...), here wavenumber.</li><li>The control variable (time/temperature/potential/...), here c.</li></ul></div><pre class="codeinput">SpectralData = load (<span class="string">'sim_example_data.dat'</span>);
+  </style></head><body><div class="content"><h1>Example script for a typical analysis using Spectram toolbox.</h1><!--introduction--><p>A typical data analysis using SVD-based MLS by Spectram. (C) 2019, Martin Rabe</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">0. For GNU Octave only: Load the optim package</a></li><li><a href="#2">1. Load some data</a></li><li><a href="#4">2. Choose a rank</a></li><li><a href="#5">3. Define a transition model</a></li><li><a href="#8">4. Choose/vary start parameters and/or bounds</a></li><li><a href="#10">5. Decompose and fit</a></li><li><a href="#11">6. Assesment of the results</a></li></ul></div><h2 id="1">0. For GNU Octave only: Load the optim package</h2><p>In Octave, first the optim package must be loaded. Currently this issues a warning which may be suppressed. Only in Octave uncomment the following 2 lines: warning('off', 'Octave:deprecated-function') pkg load optim</p><h2 id="2">1. Load some data</h2><p>The loading routine should provide:</p><div><ul><li>The absorbance/intensity/... array, here A.</li><li>The vector with an energy equivalent (wavelength/wavenumber/frequency/...), here wvnr.</li><li>The control variable (time/temperature/potential/...), here c.</li></ul></div><pre class="codeinput">SpectralData = load (<span class="string">'sim_example_data.dat'</span>);
 A = SpectralData(:,2:end);
 wvnr = SpectralData(:,1);
 c = [10:5:80];
-</pre><h2 id="3">2. choose a rank</h2><p>Different criteria are discussed in detail by: Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33. Here visual Inspection of U, S, and V is applied using RankFinder app. Within this programm the global variable rnk is defined.</p><pre class="codeinput"><span class="keyword">global</span> rnk;
-app = RankFinder(wvnr,c,A);
-waitfor(app.UIFigure);
-</pre><pre class="codeoutput">Warning: The value of local variables may have been changed to match the
-globals.  Future versions of MATLAB will require that you declare a variable to
-be global before you use that variable. 
-</pre><h2 id="4">3. Define a transition model</h2><p>A model for usage within this package consists of a cell array that contains handles to anonymous model functions. The model array is of size [1,n] with n the number of (c-dependent) transitions.</p><p>Create a simple sigmoidal model, from the standard library provided by the model_fun class:</p><pre class="codeinput">n = 2;
+</pre><h2 id="4">2. Choose a rank</h2><p>Different criteria are discussed in detail by: Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33. Here visual Inspection of U, S, and V is applied.</p><pre class="codeinput"><span class="keyword">global</span> rnk
+h = RnkFinder(wvnr,c,A);
+waitfor(h.fig);
+</pre><h2 id="5">3. Define a transition model</h2><p>A model for usage within Spectram consists of a cell array that contains handles to anonymous model functions. The model array is of size [1,n] with n the number of (c-dependent) transitions.</p><p>Create a simple sigmoidal model, from the standard library provided by the model_fun class:</p><pre class="codeinput">n = 2;
 [Model ,Paralist] = simple_model(model_fun.sigmoid, n, 1);
-</pre><p>The order of the parameters the parameter vectors, needed for the following steps is specified in the parameter name list 'Paralist' as it is returned above by simple_model(...):</p><pre class="codeinput">disp(Paralist)
+</pre><p>In the following steps parameter vectors are needed. The order of the parameters in the parameter vectors is specified in the parameter name list 'Paralist' that is returned above by simple_model(...):</p><pre class="codeinput">disp(Paralist)
 </pre><pre class="codeoutput">    'c_mid_1'
     'del_1'
     'c_mid_2'
     'del_2'
 
-</pre><p>Alternatively, a list of parameter names can be created by:</p><pre class="codeinput">Paralist = vecpar(Model)
+</pre><p>Models can also be created manually as cell array of anonymous functions (for more details see: creating_advancedmodel.m). Then the parameter name list is created by the function vecpar(...):</p><pre class="codeinput">Model2 = {model_fun.sigmoid, @(c)ones(size(c)).*1};
+Paralist2 = vecpar(Model2)
 </pre><pre class="codeoutput">
-Paralist =
+Paralist2 =
 
-  4&times;1 cell array
+  2&times;1 cell array
 
     {'c_mid_1'}
     {'del_1'  }
-    {'c_mid_2'}
-    {'del_2'  }
 
-</pre><h2 id="7">4. choose/vary start parameters and/or bounds</h2><p>3 parameter vectors must be constructed that contain start parameters, the lower bounds and and the upper bounds. The order and size of these parameter vectors is defined by 'Paralist'.</p><pre class="codeinput">startparas = [30; 5; 90; 5];
-lb = [0; 0; 0; 0];
+</pre><h2 id="8">4. Choose/vary start parameters and/or bounds</h2><p>Three parameter vectors must be constructed that contain start parameters, the lower bounds and and the upper bounds. The order and size of these parameter vectors is defined by 'Paralist'. Note: In Octave setting bounds to 0 returns warnings in step 5. For workaround set the bounds to very small values close to 0.</p><pre class="codeinput">startparas = [30; 5; 90; 5];
+lb = [1E-18; 1E-18; 1E-18; 1E-18];
 ub = [100; 100; 100; 100];
 </pre><p>Also, create an optimization options structure and define the important options:</p><pre class="codeinput">ftopt = optimset (<span class="string">'Tolfun'</span>, 1e-18, <span class="keyword">...</span>
                   <span class="string">'MaxFunEvals'</span>,100000,<span class="keyword">...</span>
                   <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span>
                   <span class="string">'TolX'</span>,1E-18,<span class="keyword">...</span>
                   <span class="string">'MaxIter'</span>, 1000);
-</pre><h2 id="9">5. Decompose and fit</h2><p>Call recombfit(...) to fit the model to the data.</p><pre class="codeinput">[paramout,resnorm,residual,exitflag,output] = <span class="keyword">...</span>
+</pre><h2 id="10">5. Decompose and fit</h2><p>Call recombfit(...) to fit the model to the data.</p><pre class="codeinput">[paramout,resnorm,residual,exitflag,output] = <span class="keyword">...</span>
     recombfit(Model, c, A, rnk, startparas, lb, ub, ftopt);
 </pre><pre class="codeoutput">
                                          Norm of      First-order 
  Iteration  Func-count     f(x)          step          optimality
-     0          5      0.00102926                        0.0108
-     1         10     0.000314153       0.613642        0.00314      
-     2         15     0.000104422         1.3926       0.000133      
-     3         20     0.000104422        3.27597       0.000133      
-     4         25     8.89935e-05       0.818994       6.07e-05      
-     5         30     5.02669e-05        1.63799       5.91e-05      
-     6         35     8.27941e-06         1.2287       7.98e-05      
-     7         40     3.58933e-06       0.453466       1.89e-05      
-     8         45     3.46941e-06      0.0481009       4.42e-07      
-     9         50     3.46776e-06     0.00724897       1.07e-07      
-    10         55     3.46773e-06    0.000761509       1.05e-08      
-    11         60     3.46773e-06    8.60925e-05       1.19e-09      
-    12         65     3.46773e-06     9.7098e-06       1.32e-10      
-    13         70     3.46773e-06    1.11443e-06       1.53e-11      
-    14         75     3.46773e-06    2.31459e-07       8.53e-12      
+     0          5      0.00104503                        0.0108
+     1         10     0.000321276       0.624899        0.00318      
+     2         15     0.000104618        1.43622       0.000138      
+     3         20     0.000104618        3.26736       0.000138      
+     4         25     8.89151e-05        0.81684       5.46e-05      
+     5         30     4.98794e-05        1.63368       5.68e-05      
+     6         35      6.1095e-06        1.28453        6.5e-05      
+     7         40     1.98331e-06       0.462789        1.6e-05      
+     8         45     1.91147e-06      0.0358015       3.36e-07      
+     9         50     1.91085e-06     0.00468447       7.46e-08      
+    10         55     1.91085e-06    0.000367157       5.61e-09      
+    11         60     1.91085e-06    3.31249e-05       5.19e-10      
+    12         65     1.91085e-06    2.84213e-06       4.34e-11      
+    13         70     1.91085e-06     3.1962e-07       1.77e-11      
+    14         75     1.91085e-06    1.71756e-07       1.77e-11      
+    15         80     1.91085e-06    4.29389e-08       2.06e-11      
+    16         85     1.91085e-06    4.29389e-08       2.06e-11      
+    17         90     1.91085e-06    1.07347e-08       2.06e-11      
+    18         95     1.91085e-06    2.68368e-09       2.06e-11      
+    19        100     1.91085e-06    6.70921e-10       2.06e-11      
+    20        105     1.91085e-06     1.6773e-10       1.97e-11      
 
 Local minimum possible.
 
 lsqnonlin stopped because the final change in the sum of squares relative to 
 its initial value is less than the value of the function tolerance.
 
-</pre><h2 id="10">6. Assesment of the results</h2><p>The matrix F may be determined by calculating the values for the fitted model, by:</p><pre class="codeinput">F = eval_model(c, Model, paramout);
-</pre><p>Alternatively, the result matrices and other matrices, useful for the assesment can be calculated by:</p><pre class="codeinput">[F, D, A_fit, V_fit] = matres(A, c, Model, paramout, rnk);
-[~,~,V] = svd(A,0);
-</pre><p>Plot the results for the transitions F and the associated spectral components.</p><pre class="codeinput">f=figure(<span class="string">'OuterPosition'</span>, [170, 190, 870, 750]);
-
-sp1 = subplot(2,2,1);
-plot(c, F )
-title(<span class="string">'F'</span>)
-legend(num2str([1:size(F,2)]'))
-sp1.YLim = [-0.1, 1.1];
-
-sp2 = subplot(2,2,2);
-plot(wvnr, D)
-title(<span class="string">'D'</span>)
-legend(num2str([1:size(D,2)]'))
-
-sp3 = subplot(<span class="string">'Position'</span>, [0.13, 0.11, 0.22,  0.3259]);
-plot(wvnr, A-A_fit)
-title(<span class="string">'Residuals A - A_{fit} '</span>)
-sp3.YLim = 0.2*max(sp2.YLim)*[-1,1];
-
-sp4 = subplot(<span class="string">'Position'</span>, [0.4075, 0.11, 0.22,  0.3259]);
-plot(wvnr, A, <span class="string">'o'</span>)
-hold(sp4, <span class="string">'on'</span>)
-sp4.ColorOrderIndex = 1;
-plot(wvnr, A_fit)
-title(<span class="string">'comparison A - A_{fit}'</span>)
-
-sp5 = subplot(<span class="string">'Position'</span>, [0.685, 0.11, 0.22,  0.3259]);
-plot(c, V_fit)
-hold(sp5, <span class="string">'on'</span>)
-sp5.ColorOrderIndex = 1;
-plot(c, V(:,1:rnk), <span class="string">'o'</span>)
-title(<span class="string">'comparison V - V_{fit}'</span>)
-</pre><img vspace="5" hspace="5" src="typical_example_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><h2 id="11">6. Assesment of the results</h2><p>F may be determined by calculating the values for the fitted model, by:</p><pre class="codeinput">F = eval_model(c, Model, paramout);
+</pre><p>Alternatively, the result matrices and further matrices, useful for the assesment can be calculated by:</p><pre class="codeinput">[F, D, A_fit, V_fit] = matres(A, c, Model, paramout, rnk);
+</pre><p>An example how to plot to asses the results and the fit quality is given by f = plotmatres(...). This function first calls matres(...), then plots the results and returns the figure handle.</p><pre class="codeinput">f = plotmatres(A, wvnr, c, Model, paramout, rnk);
+</pre><img vspace="5" hspace="5" src="typical_example_01.png" alt=""> <p>It might be necessary to repeat steps 2.-6. with different input parameters until satisfying results are obtained.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Example script for a typical analysis. 
-% A typical data analysis using the transition model SVD recombination
-% method is described in the following. The basic steps any analysis should
-% contain, are: 
-% 
-% # load some data
-% # choose a rank
-% # create/load a model
-% # choose/vary start parameters and/or bounds
-% # decompose and fit
-% # evaluate results
-% # repeat from 1 until reasonable and stable results are obtained
+%% Example script for a typical analysis using Spectram toolbox. 
+% A typical data analysis using SVD-based MLS by Spectram.
+% (C) 2019, Martin Rabe
+
+%% 0. For GNU Octave only: Load the optim package
+% In Octave, first the optim package must be loaded. Currently this issues a 
+% warning which may be suppressed. Only in Octave uncomment the following 2
+% lines:
+% warning('off', 'Octave:deprecated-function')
+% pkg load optim
 
 %% 1. Load some data
 % The loading routine should provide:
 %%
 % * The absorbance/intensity/... array, here A.
 % * The vector with an energy equivalent
-% (wavelength/wavenumber/frequency/...), here wavenumber.
+% (wavelength/wavenumber/frequency/...), here wvnr.
 % * The control variable (time/temperature/potential/...), here c.
 SpectralData = load ('sim_example_data.dat');
 A = SpectralData(:,2:end);       
 wvnr = SpectralData(:,1);
 c = [10:5:80];
 
-%% 2. choose a rank
+%% 2. Choose a rank
 % Different criteria are discussed in detail by:
 % Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33.
-% Here visual Inspection of U, S, and V is applied using RankFinder app.
-% Within this programm the global variable rnk is defined.
-global rnk;     
-app = RankFinder(wvnr,c,A);
-waitfor(app.UIFigure);
+% Here visual Inspection of U, S, and V is applied. 
+global rnk
+h = RnkFinder(wvnr,c,A);
+waitfor(h.fig);
+
 
 %% 3. Define a transition model
-% A model for usage within this package consists of a cell array that 
+% A model for usage within Spectram consists of a cell array that 
 % contains handles to anonymous model functions. The model array 
 % is of size [1,n] with n the number of (c-dependent) transitions.
 %
@@ -210,22 +179,28 @@ n = 2;
 [Model ,Paralist] = simple_model(model_fun.sigmoid, n, 1);
 
 %%
-% The order of the parameters the parameter vectors, needed for the 
-% following steps is specified in the parameter name list 'Paralist' as it 
-% is returned above by simple_model(...):
+% In the following steps parameter vectors are needed. The order of the 
+% parameters in the parameter vectors is specified in the parameter name 
+% list 'Paralist' that is returned above by simple_model(...):
 disp(Paralist)
 
 %%
-% Alternatively, a list of parameter names can be created by:
-Paralist = vecpar(Model)
+% Models can also be created manually as cell array of anonymous functions 
+% (for more details see: creating_advancedmodel.m). Then the parameter name 
+% list is created by the function vecpar(...):
+Model2 = {model_fun.sigmoid, @(c)ones(size(c)).*1};
+Paralist2 = vecpar(Model2)
 
-%% 4. choose/vary start parameters and/or bounds
-% 3 parameter vectors must be constructed that contain start parameters, 
+%% 4. Choose/vary start parameters and/or bounds
+% Three parameter vectors must be constructed that contain start parameters, 
 % the lower bounds and and the upper bounds. The order and size of these
-% parameter vectors is defined by 'Paralist'.
+% parameter vectors is defined by 'Paralist'. 
+% Note: In Octave setting bounds to 0 returns warnings in step 5. For workaround
+% set the bounds to very small values close to 0.
 startparas = [30; 5; 90; 5];
-lb = [0; 0; 0; 0];
+lb = [1E-18; 1E-18; 1E-18; 1E-18];
 ub = [100; 100; 100; 100];
+
 %%
 % Also, create an optimization options structure and define the important
 % options:
@@ -241,52 +216,24 @@ ftopt = optimset ('Tolfun', 1e-18, ...
     recombfit(Model, c, A, rnk, startparas, lb, ub, ftopt);
 
 %% 6. Assesment of the results
-% The matrix F may be determined by calculating the values for the fitted 
+% F may be determined by calculating the values for the fitted 
 % model, by:
 F = eval_model(c, Model, paramout);
 
 %%
-% Alternatively, the result matrices and other matrices, useful for the
+% Alternatively, the result matrices and further matrices, useful for the
 % assesment can be calculated by:
 [F, D, A_fit, V_fit] = matres(A, c, Model, paramout, rnk);
-[~,~,V] = svd(A,0);
 
 %%
-% Plot the results for the transitions F and the associated spectral
-% components.
-f=figure('OuterPosition', [170, 190, 870, 750]);
+% An example how to plot to asses the results and the fit quality is given
+% by f = plotmatres(...). This function first calls matres(...), then plots 
+% the results and returns the figure handle.
+f = plotmatres(A, wvnr, c, Model, paramout, rnk);
 
-sp1 = subplot(2,2,1);
-plot(c, F )
-title('F')
-legend(num2str([1:size(F,2)]'))
-sp1.YLim = [-0.1, 1.1];
-
-sp2 = subplot(2,2,2);
-plot(wvnr, D)
-title('D')
-legend(num2str([1:size(D,2)]'))
-
-sp3 = subplot('Position', [0.13, 0.11, 0.22,  0.3259]);
-plot(wvnr, A-A_fit)
-title('Residuals A - A_{fit} ')
-sp3.YLim = 0.2*max(sp2.YLim)*[-1,1];
-
-sp4 = subplot('Position', [0.4075, 0.11, 0.22,  0.3259]);
-plot(wvnr, A, 'o')
-hold(sp4, 'on')
-sp4.ColorOrderIndex = 1;
-plot(wvnr, A_fit)
-title('comparison A - A_{fit}')
-
-sp5 = subplot('Position', [0.685, 0.11, 0.22,  0.3259]);
-plot(c, V_fit)
-hold(sp5, 'on')
-sp5.ColorOrderIndex = 1;
-plot(c, V(:,1:rnk), 'o')
-title('comparison V - V_{fit}')
-
-
-
+%%
+% It might be necessary to repeat steps 2.-6. with different input
+% parameters until satisfying results are obtained.
+%
 ##### SOURCE END #####
 --></body></html>

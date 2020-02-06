@@ -30,7 +30,8 @@ function [ F, D, varargout ] = matres( A, c, model, paras, rnk, varargin)
 %   used to assess quality of the results, by comparison with V returned by: 
 %   [~,~,V] = svd(A, 0).
 %
-%   Martin Rabe, 2019
+% Copyright (c) 2019 Martin Rabe
+
 
 [U,S,V] = svd(A, 0);
 
