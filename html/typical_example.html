@@ -66,7 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Example script for a typical analysis using Spectram toolbox.</h1><!--introduction--><p>A typical data analysis using SVD-based MLS by Spectram. (C) 2019, Martin Rabe</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">0. For GNU Octave only: Load the optim package</a></li><li><a href="#2">1. Load some data</a></li><li><a href="#4">2. Choose a rank</a></li><li><a href="#5">3. Define a transition model</a></li><li><a href="#8">4. Choose/vary start parameters and/or bounds</a></li><li><a href="#10">5. Decompose and fit</a></li><li><a href="#11">6. Assesment of the results</a></li></ul></div><h2 id="1">0. For GNU Octave only: Load the optim package</h2><p>In Octave, first the optim package must be loaded. Currently this issues a warning which may be suppressed. Only in Octave uncomment the following 2 lines: warning('off', 'Octave:deprecated-function') pkg load optim</p><h2 id="2">1. Load some data</h2><p>The loading routine should provide:</p><div><ul><li>The absorbance/intensity/... array, here A.</li><li>The vector with an energy equivalent (wavelength/wavenumber/frequency/...), here wvnr.</li><li>The control variable (time/temperature/potential/...), here c.</li></ul></div><pre class="codeinput">SpectralData = load (<span class="string">'sim_example_data.dat'</span>);
+  </style></head><body><div class="content"><h1>Example script for a typical analysis using Spectram toolbox.</h1><!--introduction--><p>A typical data analysis using SVD-based MLS by Spectram.</p><p>Copyright (c) 2019 Martin Rabe</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">0. For GNU Octave only: Load the optim package</a></li><li><a href="#2">1. Load some data</a></li><li><a href="#4">2. Choose a rank</a></li><li><a href="#5">3. Define a transition model</a></li><li><a href="#8">4. Choose/vary start parameters and/or bounds</a></li><li><a href="#10">5. Decompose and fit</a></li><li><a href="#11">6. Assesment of the results</a></li></ul></div><h2 id="1">0. For GNU Octave only: Load the optim package</h2><p>In Octave, first the optim package must be loaded. Only in Octave uncomment the following line:</p><pre class="codeinput"><span class="comment">% pkg load optim</span>
+</pre><h2 id="2">1. Load some data</h2><p>The loading routine should provide:</p><div><ul><li>The absorbance/intensity/... array, here A.</li><li>The vector with an energy equivalent (wavelength/wavenumber/frequency/...), here wvnr.</li><li>The control variable (time/temperature/potential/...), here c.</li></ul></div><pre class="codeinput">SpectralData = load (<span class="string">'sim_example_data.dat'</span>);
 A = SpectralData(:,2:end);
 wvnr = SpectralData(:,1);
 c = [10:5:80];
@@ -138,13 +139,13 @@ its initial value is less than the value of the function tolerance.
 ##### SOURCE BEGIN #####
 %% Example script for a typical analysis using Spectram toolbox. 
 % A typical data analysis using SVD-based MLS by Spectram.
-% (C) 2019, Martin Rabe
+%
+% Copyright (c) 2019 Martin Rabe
 
 %% 0. For GNU Octave only: Load the optim package
-% In Octave, first the optim package must be loaded. Currently this issues a 
-% warning which may be suppressed. Only in Octave uncomment the following 2
-% lines:
-% warning('off', 'Octave:deprecated-function')
+% In Octave, first the optim package must be loaded. Only in Octave 
+% uncomment the following line:
+
 % pkg load optim
 
 %% 1. Load some data

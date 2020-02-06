@@ -4,10 +4,9 @@
 % Copyright (c) 2019 Martin Rabe
 
 %% 0. For GNU Octave only: Load the optim package
-% In Octave, first the optim package must be loaded. Currently this issues a 
-% warning which may be suppressed. Only in Octave uncomment the following 2
-% lines:
-% warning('off', 'Octave:deprecated-function')
+% In Octave, first the optim package must be loaded. Only in Octave 
+% uncomment the following line:
+
 % pkg load optim
 
 %% 1. Load some data
