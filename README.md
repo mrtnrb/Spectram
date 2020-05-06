@@ -6,15 +6,29 @@ Toolbox for MATLAB(R) and GNU Octave for the analysis of dynamic spectroscopic d
 
 ### Prerequisites
 
-MATLAB(R) 9.0 with Optimization Toolbox
-GNU Octave 4.4.1 (Optim package)
+MATLAB(R) 9.0 with Optimization Toolbox\
+or\
+GNU Octave 4.4.1 with Optim package
 
-### Installing
+### Installation
 
 Download or clone the repository. Add the destination folder to you MATLAB search path or Octave load path. For instance by:
 
 ```
 addpath(folderName)
+```
+
+#### GNU Octave
+In GNU Octave the optim package needs to be installed. The optim package itself requires the packages struct, statistics and io. For a list of installed packages type:
+
+```
+pkg list
+```
+
+When not found in the list, the optim package and its dependencies can be installed by:
+
+```
+pkg install -forge io struct statistics optim
 ```
 
 Open 'typical_example.m' for a short introduction on the usage and capabilities of Spectram.
