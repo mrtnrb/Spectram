@@ -1,6 +1,7 @@
 function [ paramout, varargout ] = recombfit(Model, c, A, rnk, startingvs, varargin)
-%Performs singular value decomposition (SVD) and global fitting. Returns 
-%fitted parameters and optionally the output from the solver lsqnonlin.
+%Performs singular value decomposition (SVD) and recommbination by matrix 
+%least squares (MLS). Returns fitted parameters and optionally the output 
+%from the solver lsqnonlin.
 %   Details of the method can be found in: 
 %   Hendler et al. 1994, J Biochem Bioph Methods 28, 1-33.
 %   Shrager 1986 Chemometr Intell Lab Sys 1 59-70.
