@@ -4,9 +4,12 @@
 % Copyright (c) 2019 Martin Rabe
 
 %% 0. For GNU Octave only: Load the optim package
-% In Octave, first the optim package must be loaded. Only in Octave 
-% uncomment the following line:
-
+% In Octave, first the optim package must be loaded.
+% When not installed, the optim package and its dependencies must 
+% be installed by:
+% pkg install -forge io struct statistics optim 
+%
+% Only in Octave uncomment the following line to load optim:
 % pkg load optim
 
 %% 1. Load some data
