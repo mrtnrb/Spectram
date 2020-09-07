@@ -1,7 +1,7 @@
 # Spectram
 
 Toolbox for MATLAB(R) and GNU Octave for the analysis of dynamic spectroscopic data by SVD-based MLS. Spectram allows to deconvolute the data into transition models and their associated spectral components, which can be directly interpreted. Spectram can be applied to any desired spectroscopic technique and the applied models can be chosen individually.
-A more detailed description on how spectram works can be found in the associated meta paper published in the Journal of Open Research Software under the (DOI:10.5334/jors.323)[https://doi.org10.5334/jors.323]
+A more detailed description on how spectram works can be found in the associated meta paper published in the Journal of Open Research Software under the [DOI:10.5334/jors.323](https://doi.org10.5334/jors.323).
 
 ## Getting Started
 
