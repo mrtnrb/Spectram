@@ -32,11 +32,29 @@ When not found in the list, the optim package and its dependencies can be instal
 pkg install -forge io struct statistics optim
 ```
 
-Open 'typical_example.m' for a short introduction on the usage and capabilities of Spectram.
+Open [typical_example.m](typical_example.m) for a short introduction on the usage and capabilities of Spectram.
 
-## Author
+## Citation
 
-Martin Rabe
+Please cite the meta paper, if you found Spectram useful for your work: 
+Rabe, M., 2020. Spectram: A MATLAB® and GNU Octave Toolbox for Transition Model Guided Deconvolution of Dynamic Spectroscopic Data. *Journal of Open Research Software*, 8(1), p.13. DOI: http://doi.org/10.5334/jors.323  
+
+You may also use the Bibtex citation:
+```
+@Article{Rabe_Spectram2020,
+  author  = {Martin Rabe},
+  title   = {{S}pectram: A {MATLAB}® and {GNU} {O}ctave {T}oolbox for {T}ransition {M}odel {G}uided {D}econvolution of {D}ynamic {S}pectroscopic {D}ata},
+  journal = {Journal of Open Research Software},
+  year    = {2020},
+  volume  = {8},
+  number  = {1},
+  pages   = {13},
+  month   = jun,
+  doi     = {10.5334/jors.323},
+  url     = {http://doi.org/10.5334/jors.323},
+}
+
+```
 
 ## License
 
